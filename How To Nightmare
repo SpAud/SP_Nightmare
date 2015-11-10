@@ -1,0 +1,4 @@
+1.   Laden der Dateien
+2.   .egg ausführbar machen "chmod +x nightmare..."
+3.1. Aufruf mit "./nightmare-2.0-py2.7.egg --bench test.py"
+3.2  Falls das nicht funktioniert, einfach mal mit "python nightmare-2.0-py2.7.egg --bench test.py" probieren
