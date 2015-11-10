@@ -1,0 +1,29 @@
+ERROR: The operation is invalid
+Usage: ueb01 [INPUT] FUNCTION OPERATION
+       -> applies a FUNCTION with an OPERATION on a FILTERed sequence of INTEGERs and prints the result.
+
+   or: ueb01 -h
+       -> print this information
+
+INPUT:
+  a list of INTEGERs and FILTERs in any order
+
+INTEGER:
+  any negative or positive integer
+
+FILTER:
+  -x INTEGER -> take multiples of INTEGER into account
+  -e         -> take even values into account
+  -o         -> take odd values into account
+
+FUNCTION:
+  uses the FUNCTIONs as defined in the python language
+
+  -M INTEGER -> uses map as the FUNCTION with INTEGER as the second value for the OPERATION
+  -R         -> reduces the list with the given OPERATION (only -a and -m allowed)
+
+OPERATION:
+  -a -> uses addition as the OPERATION for the FUNCTION
+  -s -> uses subtraction as the OPERATION for the FUNCTION
+  -m -> uses multiplication as the OPERATION for the FUNCTION
+  -d -> uses division as the OPERATION for the FUNCTION
