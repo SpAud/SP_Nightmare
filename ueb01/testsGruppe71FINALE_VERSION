@@ -1,0 +1,504 @@
+#!/usr/bin/env python
+# pyTest - Testbench
+# Saved at 21:12:26
+#
+# Device Under Test
+DUT = "./ueb01"
+# Test definitions
+inputErrorsSyntax = [
+	Test (
+		name = "Fail to put in a FUNCTION at all",
+		description = "User failed to give -M or -R as argument",
+		command = "$DUT 1 2 3 -3 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Fail to put in a OPERATION at all for map",
+		description = "User failed to give any OPERATION as argument for map",
+		command = "$DUT 1 2 3 -3 -M 2",
+		returnCode = 3
+	),
+	Test (
+		name = "Fail to put in a OPERATION at all for reduce",
+		description = "User failed to give any OPERATION as argument for reduce",
+		command = "$DUT 1 2 3 -3 -R",
+		returnCode = 3
+	),
+		Test (
+		name = "Fail to put in a '-' before the OPERATION for map",
+		description = "User failed to put a '-' before OPERATION as argument for map",
+		command = "$DUT 1 2 3 -3 -M 2 a",
+		returnCode = 3
+	),
+	Test (
+		name = "Fail to put in a '-' before the OPERATION for reduce",
+		description = "User failed to put a '-' before OPERATION as argument for reduce",
+		command = "$DUT 1 2 3 -3 -R a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put a valid filter at the end of the arguments",
+		description = "User gave valid filter at the end",
+		command = "$DUT 1 2 3 -M 0 -a -e",
+		returnCode = 3
+	),
+	Test (
+		name = "Put in an OPERAND for FUNCTION reduce",
+		description = "User gave an op for reduce",
+		command = "$DUT 1 2 3 -3 -R 2",
+		returnCode = 3
+	),
+	Test (
+		name = "Fail to put in enough arguments (at least 3)",
+		description = "User failed to give at least 3 arguments",
+		command = "$DUT -R",
+		returnCode = 4
+	),
+	Test (
+		name = "Put in absolute minimum arguments",
+		description = "User gave the minimum of arguments",
+		command = "$DUT -R -a",
+		stdout = "0",
+		returnCode = 0
+	),
+	Test (
+		name = "Put in an invalid filter",
+		description = "User gave an invalid filter",
+		command = "$DUT 1 2 3 -p -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Forgot the '-' in front of an otherwise valid filter",
+		description = "User forgot '-' in front of filter",
+		command = "$DUT 1 2 3 o -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid filter even",
+		description = "User gave another char after valid filter even",
+		command = "$DUT 1 2 -ef 3 -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid filter odd",
+		description = "User gave another char after valid filter odd",
+		command = "$DUT 1 2 -df 3 -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid filter multiple",
+		description = "User gave another char after valid filter multiple",
+		command = "$DUT 1 2 -xf 3 -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another number after a valid filter multiple",
+		description = "User gave another number after valid filter multiple",
+		command = "$DUT 1 2 -x1 3 -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid operation",
+		description = "User gave another char after valid operation",
+		command = "$DUT 1 2 3 -M 0 -as",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid Function M",
+		description = "User gave another char after valid function M",
+		command = "$DUT 1 2 3 -Ms 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another number after a valid Function M",
+		description = "User gave another number after valid function M",
+		command = "$DUT 1 2 3 -M1 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid Function R",
+		description = "User gave another char after valid function R",
+		command = "$DUT 1 2 3 -Rs -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another number after a valid Function R",
+		description = "User gave another number after valid function R",
+		command = "$DUT 1 2 3 -R1 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Put another char after a valid number",
+		description = "User gave another char after valid number",
+		command = "$DUT 1a 2 3 -R -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Give only numbers",
+		description = "User gave only numbers",
+		command = "$DUT 1 4 5 2",
+		returnCode = 3
+	),
+	Test (
+		name = "Give only numbers plus one filter",
+		description = "User gave only numbers plus one filter",
+		command = "$DUT 1 4 5 2 -o",
+		returnCode = 3
+	)
+]
+
+inputErrorsInvalidOp = [
+	Test (
+		name = "Fail to put in a valid OPERATION for map",
+		description = "User gave something else than -a, -s, -d or -m as argument for map",
+		command = "$DUT 1 2 3 -3 -M 3 -t",
+		returnCode = 2
+	),
+	Test (
+		name = "Fail to put in a valid OPERATION for FUNCTION reduce",
+		description = "User gave -s or -d as argument for reduce",
+		command = "$DUT 1 2 3 -3 -R -s",
+		returnCode = 2
+	),
+	Test (
+		name = "Fail to put in an OPERAND for FUNCTION map",
+		description = "User failed to give an op for map",
+		command = "$DUT 1 2 3 -3 -M -a",
+		returnCode = 3
+	)
+]
+
+severalInputErros = [
+	Test (
+		name = "Alle Fehler auf einmal!",
+		description = "User macht alles auf einmal falsch!",
+		command = "$DUT 1a -o2 -ed 2 3 -k -x 0 1 3 -M -p",
+		returnCode = 3
+	)
+]
+
+newsGroupExamples = [
+	Test (
+		name = "Too many arguments",
+		description = "User gibt zu viele Argumente mit, sowohl R als auch M",
+		command = "$DUT 1 2 3 -e -o -R -a -M 0 -a",
+		returnCode = 3
+	),
+	Test (
+		name = "Noch mehr Argumente am Ende",
+		description = "User gibt am Ende, nach bis dahin korrekter Ausgabe, noch was an",
+		command = "$DUT 1 2 3 -e -o -R -a -G",
+		returnCode = 3
+	),
+	Test (
+		name = "Division fuer R und auch zu viele Argumente am Ende",
+		description = "User ruft sowohl Division fuer R auf, als auch zu viele Argumente am Ende",
+		command = "$DUT 1 2 3 -e -o -R -d -G",
+		returnCode = 3
+	),
+	Test (
+		name = "Ungueltiger Filter und auch ungueltige Operation",
+		description = "User gibt erst eine ungueltigen Filter an (der zufaellig einer Operation entspricht) und am Ende auch eine invalide Operation",
+		command = "$DUT 1 2 -a 3 4 -M -k",
+		returnCode = 3
+	),
+	Test (
+		name = "Invalide Operation",
+		description = "Einziger Fehler: invalide Operation",
+		command = "$DUT 1 2 3 -R -f",
+		returnCode = 2
+	)
+]
+
+
+mapAddition = [
+    Test (
+        name = "Use map with (+2) on the list [1,2,3,-3]",
+        description = "Adds 2 to every element of the list",
+        command = "$DUT 1 2 3 -3 -o -e -M 2 -a",
+        stdout = "3 4 5 -1",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use map with (+0) on the list [1,2,3,-3]",
+        description = "Adds 0 to every element of the list",
+        command = "$DUT 1 2 3 -3 -o -e -M 0 -a",
+        stdout = "1 2 3 -3",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use map with (+2) on the list []",
+        description = "Adds 2 to an empty list",
+        command = "$DUT -M 2 -a",
+        stdout = "",
+		returnCode = 0
+    ),
+    Test (
+        name = "Use map with (+(-2)) on the list [1,2,3,-3]",
+        description = "Adds -2 to every element of the list",
+        command = "$DUT 1 2 3 -3 -o -e -M -2 -a",
+        stdout = "-1 0 1 -5",
+		returnCode = 0
+    )
+]
+
+getHelp = [
+	Test(
+		name = "Show the help and exit",
+		description = "Display help on stdout",
+		command = "$DUT -h",
+		stdout = lambda x: len(x) > 0 and x.find('Usage') >= 0,
+		returnCode = 0
+	),
+	Test(
+	name = "INVALID - Wrong Usage call",
+	description = "Falsche Eingabe",
+	command = "$DUT -h2",
+	returnCode = 3
+	)
+]
+    
+mapSubtraction = [
+    Test (
+        name = "Use map with (-2) on the list [1,2,3,-3]",
+        description = "Subtracts 2 from every element of the list",
+        command = "$DUT 1 2 3 -3 -o -e -M 2 -s",
+        stdout = "-1 0 1 -5",
+        returnCode = 0	
+    ),
+	Test (
+        name = "Use map with (-2) on the list []",
+        description = "Subtracts -2 from an empty list",
+        command = "$DUT -M 2 -s",
+        stdout = "",
+		returnCode = 0
+    )
+]
+
+mapDivision = [
+    Test (
+        name = "Use map with (/2) on the list [1,2,3,-3]",
+        description = "Divides every element of the list by 2. Rounds towards negative infinity",
+        command = "$DUT 1 2 3 -3 -o -e -M 2 -d",
+        stdout = "0 1 1 -2",
+        returnCode = 0		
+	),
+	Test (
+        name = "Use map with (/0) on the list [1,2,3,-3]",
+        description = "Divides every element of the list by 0. Gives out an error",
+        command = "$DUT 1 2 3 -3 -o -e -M 0 -d",
+        returnCode = 6
+	),
+	Test (
+        name = "Use map with (/2) on the list []",
+        description = "Divides an empty list by 2",
+        command = "$DUT -M 2 -d",
+        stdout = "",
+		returnCode = 0
+    )	
+]	
+	
+mapMultiplication = [
+    Test (
+        name = "Use map with (*2) on the list [1,2,3,-3]",
+        description = "Multiplies every element of the list by 2",
+        command = "$DUT 1 2 3 -3 -o -e -M 2 -m",
+        stdout = "2 4 6 -6",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use map with (*(-3)) on the list [1,2,3,-3]",
+        description = "Multiplies every element of the list by -3",
+        command = "$DUT 1 2 3 -3 -o -e -M -3 -m",
+        stdout = "-3 -6 -9 9",
+        returnCode = 0			
+    ),
+	Test (
+        name = "Use map with (*2) on the list []",
+        description = "Multiply an empty list by 2",
+        command = "$DUT -M 2 -m",
+        stdout = "",
+		returnCode = 0
+    )
+]
+
+reduceAddition = [
+    Test (
+        name = "Use reduce with (+) on the list [1,2,3,-3]",
+        description = "Links the elements of the list with +",
+        command = "$DUT 1 2 3 -3 -o -e -R -a",
+        stdout = "3",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use reduce with (+) on the list []",
+        description = "Links the elements of an empty list with +",
+        command = "$DUT -R -a",
+        stdout = "0",
+        returnCode = 0
+    )
+]
+    
+reduceSubtraction = [
+    Test (
+        name = "Use reduce with (-) on the list [1,2,3,-3]",
+        description = "Tries to link the elements of the list with (-). Gives an error",
+        command = "$DUT 1 2 3 -3 -o -e -R -s",
+        returnCode = 2
+    )
+]
+
+reduceDivision = [
+    Test (
+        name = "Use reduce with (/) on the list [1,2,3,-3]",
+        description = "Tries to link the elements of the list with (/). Gives an error",
+        command = "$DUT 1 2 3 -3 -o -e -R -d",
+        returnCode = 2
+	)
+]	
+	
+reduceMultiplication = [
+    Test (
+        name = "Use reduce with (*) on the list [1,2,3,-3]",
+        description = "Links the elements of the list with *",
+        command = "$DUT 1 2 3 -3 -o -e -R -m",
+        stdout = "-18",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use reduce with (*) on the list []",
+        description = "Links the elements of an empty list with *",
+        command = "$DUT -R -m",
+        stdout = "1",
+        returnCode = 0		
+    )
+]
+
+filterX = [
+    Test (
+        name = "Use filter x (0) on the list [0,1,2,3,-3]",
+        description = "Tries to filter the list by multiples of 0. Gives an error",
+        command = "$DUT 0 1 2 3 -3 -x 0 -M 0 -a",
+        returnCode = 5
+    ),
+    Test (
+        name = "Use filter x (3) on the list [0,1,2,3,-3]",
+        description = "Filters the list by multiples of 3",
+        command = "$DUT 0 1 2 3 -3 -x 3 -M 0 -a",
+        stdout = "0 3 -3",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use filter x (3) first, then change it to x (2) on the list [0,1,2,3,-3]",
+        description = "Filters the list by multiples of 2, after starting with multiples of 3",
+        command = "$DUT 0 1 -x 3 2 3 -3 -x 2 -M 0 -a",
+        stdout = "0 2",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use filter x (3) several times on the list [0,1,2,3,-3]",
+        description = "Filters the list 'several times' by multiples of 3",
+        command = "$DUT 0 1 2 3 -3 -x 3 -x 3 -M 0 -a",
+        stdout = "0 3 -3",
+        returnCode = 0	
+    )
+]
+
+filterO = [
+    Test (
+        name = "Use filter odd on the list [0,1,2,3,-3]",
+        description = "Filters the list so that only the odd numbers remain",
+        command = "$DUT 0 1 2 3 -3 -o -M 0 -a",
+        stdout = "1 3 -3",
+        returnCode = 0			
+	),
+	Test (
+        name = "Use filter odd in the middle of the list [0,1,2,3,-3]",
+        description = "Filters the list in the middle so that only the odd numbers remain",
+        command = "$DUT 0 1 -o 2 3 -3 -M 0 -a",
+        stdout = "1 3 -3",
+        returnCode = 0			
+	),
+	Test (
+        name = "Use filter odd in the beginning of the list [0,1,2,3,-3]",
+        description = "Filters the list in the middle so that only the odd numbers remain",
+        command = "$DUT -o 0 1 2 3 -3 -M 0 -a",
+        stdout = "1 3 -3",
+        returnCode = 0			
+	),
+	Test (
+        name = "Use filter odd several times on the list [0,1,2,3,-3]",
+        description = "Filters the list 'several times' so that only the odd numbers remain",
+        command = "$DUT -o -o 0 1 2 3 -3 -M 0 -a",
+        stdout = "1 3 -3",
+        returnCode = 0			
+	)			
+]	
+	
+filterE = [
+    Test (
+        name = "Use filter even on the list [0,1,2,3,-3]",
+        description = "Filters the list so that only the even numbers remain",
+        command = "$DUT 0 1 2 3 -3 -e -M 0 -a",
+        stdout = "0 2",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use filter even in the middle of the list [0,1,2,3,-3]",
+        description = "Filters the list in the middle so that only the even numbers remain",
+        command = "$DUT 0 1 -e 2 3 -3 -M 0 -a",
+        stdout = "0 2",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use filter even in the beginning of the list [0,1,2,3,-3]",
+        description = "Filters the list in the beginning so that only the even numbers remain",
+        command = "$DUT -e 0 1 2 3 -3 -M 0 -a",
+        stdout = "0 2",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Use filter even several times on the list [0,1,2,3,-3]",
+        description = "Filters the list 'several times' so that only the even numbers remain",
+        command = "$DUT -e -e 0 1 2 3 -3 -M 0 -a",
+        stdout = "0 2",
+        returnCode = 0		
+    )
+]
+
+filterMultiple = [
+	Test (
+        name = "Use filter even and odd on the list [0,1,2,3,-3]",
+        description = "Filters the list so that it remains the same",
+        command = "$DUT 0 1 2 3 -3 -o -e -M 0 -a",
+        stdout = "0 1 2 3 -3",
+        returnCode = 0		
+    ),
+    Test (
+        name = "Gives an error: Array is full",
+        description = "Too many elements for Array",
+        command = "$DUT 1 2 3 42 1 -o 2 3 4 -e 2 3 1 -x 5 34 -x 7 23 2 3 -M -0 -a",
+        returnCode = 1	
+    ),
+    Test (
+        name = "Use filter odd, then filter multiple of 7 on the list [1 2 3 42 1 2 3 4 2 3 1 5 34 23 2 3]",
+        description = "Filters the list by odd number and/or multiples of 7",
+        command = "$DUT 1 2 42 1 -o 2 2 3 1 -x 5 34 -x 7 23 -M -0 -a",
+        stdout = "1 42 1 3 1 23",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use no filter  on the list [1 2 42 1 2 2 3 1 34 23]",
+        description = "Filters the list so that it remains the same",
+        command = "$DUT 1 2 42 1 2 2 3 1 34 23 -M -0 -a",
+        stdout = "1 2 42 1 2 2 3 1 34 23",
+        returnCode = 0	
+    ),
+    Test (
+        name = "Use multiple of 1 and odd filter on the list [1 2 3 4 5 6]",
+        description = "Filters the list for multiples of 1 and odd numbers",
+        command = "$DUT 1 2 3 4 5 6 -x 1 -o -R -a",
+        stdout = "21",
+        returnCode = 0	
+    )  
+]
