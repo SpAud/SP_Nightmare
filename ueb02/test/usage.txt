@@ -1,0 +1,37 @@
+Usage: ueb02 [-v] OUTPUTFORMAT MATRIXFILE OPERATIONs
+       -> specifies an OUTPUTFORMAT, an initial matrix (MATRIXFILE) and
+          a (potentially empty) list of OPERATIONs to execute in order.
+          Exits with an according error as soon as an OPERATION fails
+          or a MATRIXFILE can't be read.
+
+   or: ueb02 -h
+       -> print this information
+
+optional arguments:
+  -v -> verbose, output the current matrix after every successful step 
+          in the given OUTPUTFORMAT to stderr
+
+OUTPUTFORMAT:
+  -c -> output in human readable format to stdout
+  -f -> output in file-format to stdout
+
+MATRIXFILE:
+  a file containing a valid representation of a matrix
+       
+OPERATIONs:
+  (BINARY_OPERATION MATRIXFILE | UNARY_OPERATION)*
+  a (potentially empty) list of UNARY_OPERATIONs or BINARY_OPERATIONs
+          (with respective MATRIXFILEs) in any order
+
+BINARY_OPERATION:
+  -a -> adds the next MATRIXFILE to the current result (using matrix addition)
+  -s -> multiplies the next MATRIXFILE as a scalar to the current result
+        using scalar multiplication (the next MATRIXFILE has to be a
+        1x1-matrix)
+  -m -> multiplies the next MATRIXFILE to the current result using matrix
+        multiplication
+
+UNARY_OPERATION:
+  -d -> calculates the determinant of the current result matrix as a 1x1-matrix
+  -i -> calculates the inverse matrix of the current result (2x2-matrices only)
+  -t -> transposes the current result
